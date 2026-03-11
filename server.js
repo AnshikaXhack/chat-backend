@@ -13,52 +13,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// // ===========================
-// // Allowed frontend URLs
-// // ===========================
-// const ALLOWED_ORIGINS = [
-//   "http://localhost:5173", // local dev
-//   process.env.FRONTEND_URL   // live frontend
-// ];
-
-// // ===========================
-// // CORS middleware for Express
-// // ===========================
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-//       else callback(new Error("CORS blocked by Express"));
-//     },
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   })
-// );
-// const ALLOWED_ORIGINS = [
-//   "http://localhost:5173",
-//   process.env.FRONTEND_URL
-// ];
-
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-//     else callback(new Error("CORS blocked by Express"));
-//   },
-//   credentials: true
-// }));
+// ===========================
+// Allowed frontend URLs
+// ===========================
 const ALLOWED_ORIGINS = [
-  "http://localhost:5173", // local dev
-  process.env.FRONTEND_URL  // live frontend URL
+  "http://localhost:5173",            // Local dev
+  process.env.FRONTEND_URL || ""      // Live frontend
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    console.log("Origin:", origin);
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-    else callback(new Error("CORS blocked by Express"));
-  },
-  credentials: true,
-}));
+// ===========================
+// CORS middleware
+// ===========================
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow requests with no origin (like Postman or curl)
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+      else callback(new Error("CORS blocked by Express"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+
 // ===========================
 // Body parser
 // ===========================
@@ -76,7 +53,10 @@ connectToDb()
 // ===========================
 app.use("/room", roomRoute);
 
-app.get("/", (req, res) => res.send("🚀 Server is running"));
+// ===========================
+// Root route for testing
+// ===========================
+app.get("/", (req, res) => res.send("🚀 Backend is running!"));
 
 // ===========================
 // Socket.IO server
