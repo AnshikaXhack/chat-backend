@@ -1,103 +1,79 @@
 // server.js
-const express = require("express");
-require("dotenv").config();
-const cors = require("cors");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
+import express from "express";
+import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import dotenv from "dotenv";
+import connectToDb from "./src/db/db.js";
+import roomRoute from "./src/routes/room.route.js";
+import chatSocket from "./src/socket/socket.js";
 
-const roomRoute = require("./src/routes/room.route.js");
-const chatSocket = require("./src/socket/socket.js");
-const connectToDb = require("./src/db/db.js");
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-/* ===============================
-   1️⃣ FRONTEND URL
-================================ */
+// ===========================
+// Allowed frontend URLs
+// ===========================
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173", // local dev
+  process.env.FRONTEND_URL   // live frontend
+];
 
-
-/* ===============================
-   2️⃣ CORS MIDDLEWARE (CRASH-FREE)
-================================ */
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
-
+// ===========================
+// CORS middleware for Express
+// ===========================
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+      else callback(new Error("CORS blocked by Express"));
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 
-
-
-// IMPORTANT: handle preflight properly
-
-
-
-
-/* ===============================
-   3️⃣ BODY PARSER
-================================ */
+// ===========================
+// Body parser
+// ===========================
 app.use(express.json());
 
-/* ===============================
-   4️⃣ DATABASE CONNECTION
-================================ */
-const PORT = process.env.PORT || 3000;
-
-// const startServer = async () => {
-//   try {
-//     await connectToDb();
-
-//     expServer.listen(PORT, () => {
-//       console.log(`Server running on port ${PORT}`);
-//     });
-
-//   } catch (error) {
-//     console.error("DB connection failed:", error);
-//   }
-// };
-
-// startServer();
-
+// ===========================
+// Database connection
+// ===========================
 connectToDb()
-/* ===============================
-   5️⃣ ROUTES
-================================ */
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ DB connection failed:", err));
 
+// ===========================
+// Routes
+// ===========================
 app.use("/room", roomRoute);
-app.get("/create", (req, res) => {
-  res.send("Backend is running 🚀");
-});
-app.get("/", (req, res) => {
-  res.send("Server is running 🚀");
-});
 
+app.get("/", (req, res) => res.send("🚀 Server is running"));
 
-
-/* ===============================
-   6️⃣ SOCKET SERVER
-================================ */
-const expServer = createServer(app);
-
-
-const io = new Server(expServer, {
+// ===========================
+// Socket.IO server
+// ===========================
+const server = createServer(app);
+const io = new Server(server, {
   cors: {
-    origin: [FRONTEND_URL],
+    origin: (origin, callback) => {
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+      else callback(new Error("CORS blocked by Socket.IO"));
+    },
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
-chatSocket(io);
+chatSocket(io); // register all socket events
 
-/* ===============================
-   7️⃣ START SERVER
-================================ */
-
-/* ===============================
-   7️⃣ START SERVER
-================================ */
-
-expServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// ===========================
+// Start server
+// ===========================
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
