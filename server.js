@@ -21,18 +21,14 @@ const app = express();
 ================================ */
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://group-room-chat-ncjfvswfz-anshikaxhacks-projects.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: true,
     credentials: true,
   })
 );
+
+app.options("*", cors());
 
 // IMPORTANT: handle preflight properly
 
@@ -68,11 +64,14 @@ connectToDb()
 /* ===============================
    5️⃣ ROUTES
 ================================ */
+
+app.use("/room", roomRoute);
 app.get("/create", (req, res) => {
   res.send("Backend is running 🚀");
 });
-
-app.use("/room", roomRoute);
+app.get("/", (req, res) => {
+  res.send("Server is running 🚀");
+});
 
 
 
