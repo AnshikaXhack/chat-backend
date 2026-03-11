@@ -13,28 +13,52 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===========================
-// Allowed frontend URLs
-// ===========================
+// // ===========================
+// // Allowed frontend URLs
+// // ===========================
+// const ALLOWED_ORIGINS = [
+//   "http://localhost:5173", // local dev
+//   process.env.FRONTEND_URL   // live frontend
+// ];
+
+// // ===========================
+// // CORS middleware for Express
+// // ===========================
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+//       else callback(new Error("CORS blocked by Express"));
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   })
+// );
+// const ALLOWED_ORIGINS = [
+//   "http://localhost:5173",
+//   process.env.FRONTEND_URL
+// ];
+
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+//     else callback(new Error("CORS blocked by Express"));
+//   },
+//   credentials: true
+// }));
 const ALLOWED_ORIGINS = [
   "http://localhost:5173", // local dev
-  process.env.FRONTEND_URL   // live frontend
+  process.env.FRONTEND_URL  // live frontend URL
 ];
 
-// ===========================
-// CORS middleware for Express
-// ===========================
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-      else callback(new Error("CORS blocked by Express"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
-
+app.use(cors({
+  origin: (origin, callback) => {
+    console.log("Origin:", origin);
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+    else callback(new Error("CORS blocked by Express"));
+  },
+  credentials: true,
+}));
 // ===========================
 // Body parser
 // ===========================
