@@ -49,22 +49,22 @@ app.use(express.json());
 ================================ */
 const PORT = process.env.PORT || 3000;
 
-const startServer = async () => {
-  try {
-    await connectToDb();
+// const startServer = async () => {
+//   try {
+//     await connectToDb();
 
-    expServer.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+//     expServer.listen(PORT, () => {
+//       console.log(`Server running on port ${PORT}`);
+//     });
 
-  } catch (error) {
-    console.error("DB connection failed:", error);
-  }
-};
+//   } catch (error) {
+//     console.error("DB connection failed:", error);
+//   }
+// };
 
-startServer();
+// startServer();
 
-
+connectToDb()
 /* ===============================
    5️⃣ ROUTES
 ================================ */
@@ -81,6 +81,7 @@ app.use("/room", roomRoute);
 ================================ */
 const expServer = createServer(app);
 
+
 const io = new Server(expServer, {
   cors: {
     origin: [FRONTEND_URL],
@@ -94,3 +95,10 @@ chatSocket(io);
    7️⃣ START SERVER
 ================================ */
 
+/* ===============================
+   7️⃣ START SERVER
+================================ */
+
+expServer.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

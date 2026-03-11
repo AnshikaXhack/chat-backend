@@ -28,10 +28,11 @@ return res.status(201).json({
 });
 
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: "internal server error",
-    });
+   console.error("CREATE ROOM ERROR:", error);
+
+return res.status(500).json({
+  message: error.message,
+});
   }
 };
 
