@@ -51,12 +51,12 @@ connectToDb()
 // ===========================
 // Routes
 // ===========================
+app.get("/", (req, res) => res.send("🚀 Backend is running!"));
 app.use("/room", roomRoute);
 
 // ===========================
 // Root route for testing
 // ===========================
-app.get("/", (req, res) => res.send("🚀 Backend is running!"));
 
 // ===========================
 // Socket.IO server
