@@ -16,25 +16,17 @@ const PORT = process.env.PORT || 3000;
 // ===========================
 // Allowed frontend URLs
 // ===========================
-const ALLOWED_ORIGINS = [
-  "http://localhost:5173",
-  "https://group-room-chat.vercel.app"
-];
-
-// ===========================
-// CORS middleware
-// ===========================
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // allow requests with no origin (like Postman or curl)
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-      else callback(new Error("CORS blocked by Express"));
-    },
+    origin: true,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   })
 );
+
+// handle preflight requests
+app.options("*", cors());
+
 
 // ===========================
 // Body parser
@@ -72,15 +64,12 @@ app.use("/room", roomRoute);
 // Socket.IO server
 // ===========================
 const server = createServer(app);
+
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-      else callback(new Error("CORS blocked by Socket.IO"));
-    },
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
+    origin: true,
+    credentials: true
+  }
 });
 
 chatSocket(io); // register all socket events
