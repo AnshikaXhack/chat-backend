@@ -1,4 +1,4 @@
-// server.js
+
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
@@ -13,70 +13,34 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===========================
-// Allowed frontend URLs
-// ===========================
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-  })
-);
-
-// handle preflight requests
+app.use(cors());
 app.options("*", cors());
 
-
-// ===========================
-// Body parser
-// ===========================
 app.use(express.json());
 
-// ===========================
-// Database connection
-// ===========================
 connectToDb()
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ DB connection failed:", err));
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error(err));
 
-// ===========================
-// Routes
-// ===========================
-app.get("/", (req, res) => res.send("🚀 Backend is running!"));
-app.get("/", (req, res) => {
-  res.send("🚀 Backend v2 running!");
-});
 app.get("/", (req, res) => {
   res.json({
     status: "API Running",
-    project: "Location Based Group Chat",
-    github: "https://github.com/AnshikaXhack/GroupRoom-chat"
+    project: "Location Based Group Chat"
   });
 });
+
 app.use("/room", roomRoute);
 
-// ===========================
-// Root route for testing
-// ===========================
-
-// ===========================
-// Socket.IO server
-// ===========================
 const server = createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: true,
-    credentials: true
+    origin: "*"
   }
 });
 
-chatSocket(io); // register all socket events
+chatSocket(io);
 
-// ===========================
-// Start server
-// ===========================
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
