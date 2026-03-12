@@ -52,6 +52,9 @@ connectToDb()
 // Routes
 // ===========================
 app.get("/", (req, res) => res.send("🚀 Backend is running!"));
+app.get("/", (req, res) => {
+  res.send("🚀 Backend v2 running!");
+});
 app.use("/room", roomRoute);
 
 // ===========================
