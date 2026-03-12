@@ -17,8 +17,8 @@ const PORT = process.env.PORT || 3000;
 // Allowed frontend URLs
 // ===========================
 const ALLOWED_ORIGINS = [
-  "http://localhost:5173", // dev
-  "https://group-room-chat-ncjfvswfz-anshikaxhacks-projects.vercel.app" // live
+  "http://localhost:5173",
+  "https://group-room-chat.vercel.app"
 ];
 
 // ===========================
