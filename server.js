@@ -55,6 +55,13 @@ app.get("/", (req, res) => res.send("🚀 Backend is running!"));
 app.get("/", (req, res) => {
   res.send("🚀 Backend v2 running!");
 });
+app.get("/", (req, res) => {
+  res.json({
+    status: "API Running",
+    project: "Location Based Group Chat",
+    github: "https://github.com/AnshikaXhack/GroupRoom-chat"
+  });
+});
 app.use("/room", roomRoute);
 
 // ===========================
